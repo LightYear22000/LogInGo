@@ -135,3 +135,10 @@ func (al Lig) Stop() {
 
 	<-al.shutdownCompleteCh
 }
+
+/*
+ * Write synchronously sends the message to the log output.
+ */
+func (al Lig) Write(msg string) (int, error) {
+	return al.dest.Write([]byte(al.formatMessage(msg)))
+}
