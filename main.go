@@ -39,7 +39,7 @@ func main() {
 	if errChan != nil {
 		go func(errChan <-chan error) {
 			err := <-errChan
-			// l.Stop()
+			l.Stop()
 			log.Fatalf("Error received from logger: %v\n", err)
 		}(errChan)
 	}

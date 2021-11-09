@@ -76,7 +76,7 @@ func (al Lig) Start() struct{} {
 			go al.write(msg, wg)
 		case <-al.shutdownCh:
 			wg.Wait()
-			// al.shutdown()	
+			// al.shutdown()
 		}
 	}
 }
@@ -100,7 +100,7 @@ func (al Lig) ErrorChannel() chan error {
 
 /*
  * 	Write writes curent message to dest iowriter object.
- *	Since, this is run as a go-routine, thread safety is ensured 
+ *	Since, this is run as a go-routine, thread safety is ensured
  *	using mutex m in the Lig object.
  */
 
@@ -114,4 +114,24 @@ func (al Lig) write(msg string, wg *sync.WaitGroup) {
 			al.errorCh <- err
 		}(err)
 	}
+}
+
+/*
+ * 	shutdown closes the msgCh channel and signals to Stop() by passing an empty struct to shutdownCompleteCh.
+ */
+
+func (al Lig) shutdown() {
+	close(al.msgCh)
+	al.shutdownCompleteCh <- struct{}{}
+}
+
+/*
+ * 	Stop shuts down the logger. It will wait for all pending messages to be written and then return.
+ * 	The logger will no longer function after this method has been called.
+ */
+
+func (al Lig) Stop() {
+	al.shutdownCh <- struct{}{}
+
+	<-al.shutdownCompleteCh
 }
