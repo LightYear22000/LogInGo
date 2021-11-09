@@ -142,3 +142,22 @@ func (al Lig) Stop() {
 func (al Lig) Write(msg string) (int, error) {
 	return al.dest.Write([]byte(al.formatMessage(msg)))
 }
+
+func (al Lig) PrintLogAsync(msg string) {
+	if al.msgCh != nil {
+		al.msgCh <- msg
+	}
+}
+
+func (al Lig) PrintLogSync(msg string) {
+	_, err := al.Write(msg)
+	if err != nil {
+		fmt.Println("Unable to write message out to log")
+	}
+}
+
+func (al Lig) PrintErrorAsync(err error) {
+	if al.errorCh != nil {
+		al.errorCh <- err
+	}
+}
