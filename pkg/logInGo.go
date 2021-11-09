@@ -76,7 +76,7 @@ func (al Lig) Start() struct{} {
 			go al.write(msg, wg)
 		case <-al.shutdownCh:
 			wg.Wait()
-			// al.shutdown()
+			al.shutdown()
 		}
 	}
 }
@@ -99,7 +99,7 @@ func (al Lig) ErrorChannel() chan error {
 }
 
 /*
- * 	Write writes curent message to dest iowriter object.
+ * 	Write writes curent message to dest iowriter object asyncronously.
  *	Since, this is run as a go-routine, thread safety is ensured
  *	using mutex m in the Lig object.
  */
