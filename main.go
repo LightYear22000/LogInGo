@@ -12,7 +12,17 @@ import (
 	"strings"
 )
 
+func usage() {
+	fmt.Println("Welcome to LogInGo!")
+	fmt.Println("Usage: ./main.go [OPTIONS]")
+	fmt.Println("Available Options:")
+	fmt.Println("-out\t path of the output of the logger. Defaults to stdout.")
+	fmt.Println("-async\t enable asynchronous logging. Defaults to false.")
+}
+
+
 func main() {
+	usage()
 	out := flag.String("out", "stdout", "File name to use for log output. If stdout is provided, then output is written directly to the console.")
 	async := flag.Bool("async", false, "This flag determines if the logger should write asynchronously.")
 	msgBufferSize := 1
