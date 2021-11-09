@@ -1,11 +1,11 @@
 package main
 
 import (
-	// "bufio"
+	"bufio"
 	LogInGo "LogInGo/pkg"
 	"flag"
 
-	// "fmt"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -14,7 +14,7 @@ import (
 
 func main() {
 	out := flag.String("out", "stdout", "File name to use for log output. If stdout is provided, then output is written directly to the console.")
-	// async := flag.Bool("async", false, "This flag determines if the logger should write asynchronously.")
+	async := flag.Bool("async", false, "This flag determines if the logger should write asynchronously.")
 	msgBufferSize := 1
 	errorBufferSize := 1
 	flag.Parse()
@@ -44,4 +44,35 @@ func main() {
 		}(errChan)
 	}
 
+	for {
+		reader := bufio.NewReader(os.Stdin)
+
+		fmt.Println("Please enter message to write to log or 'q' to quit.")
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Unable to read input from command line, please try again.", err)
+			continue
+		}
+
+		if strings.ToLower(input) == "q\n" || strings.ToLower(input) == "q\r\n" {
+			if wc, ok := w.(io.Closer); ok {
+				err := wc.Close()
+				if err != nil {
+					fmt.Println("Failed to close log file:", err)
+				}
+			}
+			l.Stop()
+			break
+		}
+		if *async {
+			if messageChan != nil {
+				messageChan <- input
+			}
+		} else {
+			_, err = l.Write(input)
+			if err != nil {
+				fmt.Println("Unable to write message out to log")
+			}
+		}
+	}
 }
